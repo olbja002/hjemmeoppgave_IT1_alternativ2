@@ -1,0 +1,30 @@
+h3 {
+    font-family: monocraft, minecraftia, arial, sans-serif;
+    width: 90%;
+    margin-left: 5%;
+}
+
+label {
+    margin-left: 5%;
+}
+
+table {
+    font-family: monocraft, minecraftia, arial, sans-serif;
+    border-collapse: collapse;
+    width: 90%;
+    margin: 5%;
+    }
+
+td, th {
+    border: 2px solid #dddddd;
+    text-align: left;
+    padding: 1%;
+}
+
+th {
+    background-color: rgba(81, 197, 81, 0.479);
+}
+
+tr:nth-child(even) {
+    background-color: #ececec;
+    }

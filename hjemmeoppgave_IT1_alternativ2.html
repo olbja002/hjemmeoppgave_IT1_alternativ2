@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <table>
+        <tr id="header-row"></tr>
+    </table>
+    <h3 id="mostBirths"></h3>
+    <h3 id="leastBirths"></h3>
+    <label for="inputAar">Input felt for år som skal summeres. bruk komma for å separere år</label>
+    <input type="text" id="inputAar" name="inputAar">
+    <button onclick="summer()">summer</button>
+    <h3 id="sum"></h3>
+
+    <script>
+        var globalData = [];
+        // Fetch the CSV file
+        fetch("tabellData.csv")
+            .then(response => response.text())
+            .then(csv => {
+                // Split the CSV data into an array of rows
+                const rows = csv.split("\r\n");
+                // Get the header row
+                const header = rows.shift().split(",");
+                // Parse the data rows into an array of objects
+                var data = rows.map(row => {
+                    const cells = row.split(",");
+                    return header.reduce((data, header, index) => {
+                        data[header] = cells[index];
+                        return data;
+                    }, {});
+                });
+
+                globalData = data;
+                
+                // Add the total number of births for each year
+                var mostBirths = null;
+                var leastBirths = null;
+                var mostBirthsYear = null;
+                var leastBirthsYear = null;
+
+                data.forEach(yearData => {
+                    yearData.total = parseInt(yearData.Gutter) + parseInt(yearData.Jenter);
+
+                    if (yearData.total > mostBirths) {
+                        mostBirths = yearData.total;
+                        mostBirthsYear = yearData.Aarstall;
+                    } 
+                    if (leastBirths == null) {
+                        leastBirths = yearData.total;
+                        leastBirthsYear = yearData.Aarstall;
+                    } else if (yearData.total < leastBirths) {
+                        leastBirths = yearData.total;
+                        leastBirthsYear = yearData.Aarstall;
+                    }
+                    document.getElementById("mostBirths").innerText = "Flest fødsler i " + mostBirthsYear + " med antall: " + mostBirths;
+                    document.getElementById("leastBirths").innerText = "Færrest fødsler i " + leastBirthsYear + " med antall: " + leastBirths;
+                });
+
+                // Populate the table with the data
+                const table = document.querySelector("table");
+                const headerRow = document.querySelector("#header-row");
+                // Add the header row
+                header.forEach(headerValue => {
+                    const headerCell = document.createElement("th");
+                    headerCell.textContent = headerValue;
+                    headerRow.appendChild(headerCell);
+                });
+                data.forEach(yearData => {
+                    const row = document.createElement("tr");
+                    for (const key in yearData) {
+                        const cell = document.createElement("td");
+                        cell.textContent = yearData[key];
+                        row.appendChild(cell);
+                    }
+                    table.appendChild(row);
+                });
+                // Add the "Totalt" header after the data rows have been processed
+                const totalHeader = document.createElement("th");
+                totalHeader.textContent = "Totalt";
+                headerRow.appendChild(totalHeader);
+            });
+
+        function summer() {
+                var sum = 0;
+                document.getElementById("sum").innerHTML = "";
+                var inputElValue = document.getElementById("inputAar").value;
+                var noe = inputElValue.split(",");
+                noe.forEach(ettAarstall => {
+                    globalData.forEach(Aar => {
+                        if (Aar["Aarstall"] == ettAarstall.trim()) {
+                            sum += parseInt(Aar.total);
+                            document.getElementById("sum").innerHTML = "totalt antall fødsler de(t) året er: " + sum;
+                        }
+                    });
+                })
+        }
+    </script>
+</body>
+</html>
